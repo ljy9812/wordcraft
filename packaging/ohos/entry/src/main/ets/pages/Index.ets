@@ -444,8 +444,11 @@ struct Index {
           // persistent state the app reads at boot, so they take effect on
           // the NEXT launch — the operator force-stops and relaunches once
           // after the "[pc] language forced" / "[pc] cjk font seeded" lines.
-          this.controller.runJavaScript(FORCE_EN)
-            .catch((e: BusinessError) => hilog.warn(0x0000, TAG, 'lang force inject failed: ' + e.code));
+          // CJK round 2026-10-28: the rawfile wasm is now self-built with the Hans face
+          // (WenQuanYi Micro Hei) embedded, so the zh UI renders — the one-shot en force
+          // is retired. Clear the app's web storage once on device so an old
+          // `wc_lang_forced` marker / `wordcraft.ui` language pin does not outlive it.
+          hilog.info(0x0000, TAG, 'lang force retired (self-built CJK wasm)');
           this.controller.runJavaScript(FONT_SEED)
             .catch((e: BusinessError) => hilog.warn(0x0000, TAG, 'font seed inject failed: ' + e.code));
           // Re-hand the port to every (re)loaded page instance — a fresh port
